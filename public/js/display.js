@@ -1,4 +1,4 @@
-const socket = io('http://' + window.location.host);
+const socket = io(window.location.protocol + '//' + window.location.host);
 let localState = {};
 
 const body = document.getElementById('display-body');
