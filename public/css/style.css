@@ -1,0 +1,114 @@
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    transition: background-image 0.2s ease-in-out;
+    position: relative;
+}
+
+/* Khung chứa bao quanh toàn bộ khu vực thi đấu để cố định tỉ lệ */
+.stage-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 56.25vw; /* Tỉ lệ chuẩn 16:9 */
+    max-height: 100vh;
+    max-width: 177.78vh; /* Đảm bảo không bị vỡ khung */
+    pointer-events: none;
+}
+
+/* Thiết kế của từng cụm đồng hồ */
+.timer-wrapper {
+    position: absolute;
+    width: 140px;  /* Kích thước vừa vặn để đè chữ (3p) */
+    height: 140px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circular-timer {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.timer-bg {
+    fill: rgba(10, 25, 47, 0.85); /* Khử nền ảnh dưới chữ (3p) */
+    stroke: #1e293b;
+    stroke-width: 6;
+}
+
+.timer-progress {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+}
+
+/* Màu kim đếm ngược riêng cho từng đội */
+#timer-ungho .timer-progress { stroke: #00d2ff; }
+#timer-phandoi .timer-progress { stroke: #ff3344; }
+
+.timer-text {
+    position: absolute;
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* ==========================================================================
+   TOẠ ĐỘ ĐỘC LẬP THEO TỪNG LƯỢT THI (ĐÈ CHÍNH XÁC LÊN CHỮ 3P)
+   ========================================================================== */
+
+/* Mặc định ẩn đi */
+.hidden { display: none !important; }
+
+/* --- Lượt 1.1 và Lượt 3.1: Đội Ủng Hộ nói, chữ (3p) nằm bên PHẢI --- */
+.pos-luot-1-1 #timer-ungho {
+    left: 77.5%;
+    top: 61.5%;
+}
+.pos-luot-1-1 #timer-phandoi { display: none !important; }
+
+/* --- Lượt 1.2 và Lượt 3.2: Đội Phản Đối nói, chữ (3p) nằm bên TRÁI --- */
+.pos-luot-1-2 #timer-phandoi {
+    left: 22.5%;
+    top: 61.5%;
+}
+.pos-luot-1-2 #timer-ungho { display: none !important; }
+
+/* --- Lượt 2.1: Trình bày nằm bên TRÁI, Chất vấn nằm bên PHẢI (Hiện cả 2 đồng hồ) --- */
+.pos-luot-2-1 #timer-ungho {
+    left: 21%;
+    top: 48%;
+}
+.pos-luot-2-1 #timer-phandoi {
+    left: 79%;
+    top: 48%;
+}
+
+/* --- Lượt 2.2: Chất vấn nằm bên TRÁI, Trình bày nằm bên PHẢI (Hiện cả 2 đồng hồ) --- */
+.pos-luot-2-2 #timer-ungho {
+    left: 21%;
+    top: 48%;
+}
+.pos-luot-2-2 #timer-phandoi {
+    left: 79%;
+    top: 48%;
+}
+
+/* --- Các slide chung (Không hiện đồng hồ) --- */
+.pos-main #timer-ungho, .pos-main #timer-phandoi { display: none !important; }

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sóng Teen - Admin Control</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f0f2f5; margin: 0; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
+        button { padding: 12px 20px; margin: 4px; border: none; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; font-weight: bold; font-size: 14px;}
+        button:hover { background: #1d4ed8; }
+        button.btn-danger { background: #dc2626; }
+        button.btn-danger:hover { background: #b91c1c; }
+        button.btn-success { background: #16a34a; }
+        button.btn-success:hover { background: #15803d; }
+        .flex { display: flex; gap: 20px; flex-wrap: wrap; }
+        .control-panel { flex: 1; min-width: 250px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; }
+        input { padding: 10px; width: 90px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; font-size: 18px; font-weight: bold; }
+        .status-bar { background: #1e293b; color: #38bdf8; padding: 10px 20px; font-weight: bold; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="status-bar" id="connection-status">TRẠNG THÁI HỆ THỐNG: Đang kết nối server...</div>
+    
+    <div style="padding: 20px;">
+        <h2>BÀN ĐIỀU HÀNH GIẢI TRANH BIỆN "SÓNG TEEN"</h2>
+        
+        <div class="card">
+            <h3>1. Chọn Lượt Thi Đấu (Đổi Giao Diện Màn Hình)</h3>
+            <button onclick="changeSlide('0b.png')">Màn Hình Chờ (0b)</button>
+            <button onclick="changeSlide('0c.png')">Màn Hình Khởi Động (0c)</button>
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 15px 0;">
+            <button onclick="changeSlide('1.1bd.png')">Lượt 1.1 (Ủng Hộ nói)</button>
+            <button onclick="changeSlide('1.2bc.png')">Lượt 1.2 (Phản Đối nói)</button>
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 15px 0;">
+            <button onclick="changeSlide('2.1b.png')">Lượt 2.1 (Chất Vấn 1)</button>
+            <button onclick="changeSlide('2.2b.png')">Lượt 2.2 (Chất Vấn 2)</button>
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 15px 0;">
+            <button onclick="changeSlide('3.1bd.png')">Lượt 3.1 (Ủng Hộ tổng kết)</button>
+            <button onclick="changeSlide('3.2bc.png')">Lượt 3.2 (Phản Đối tổng kết)</button>
+            <button onclick="changeSlide('4bcd.png')">Màn Hình Kết Thúc (4bcd)</button>
+        </div>
+
+        <div class="card">
+            <h3>2. Thiết Lập Thời Gian Cho Các Đồng Hồ</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 15px;">* Đơn vị nhập tính bằng <b>Giây</b> (Ví dụ: 3 phút = 180 giây). Nếu lượt thi không dùng đồng hồ nào thì đặt ô đó bằng 0.</p>
+            
+            <label><b>Đồng hồ 1 (Ủng hộ / Trình bày):</b></label>
+            <input type="number" id="time1" value="180"> giây &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            
+            <label><b>Đồng hồ 2 (Phản đối / Chất vấn):</b></label>
+            <input type="number" id="time2" value="0"> giây 
+            <br><br>
+            <button class="btn-success" onclick="setTimer()">ÁP DỤNG THỜI GIAN LÊN MÀN HÌNH</button>
+        </div>
+
+        <div class="card">
+            <h3>3. Bộ Điều Khiển Chạy Đồng Hồ Thời Gian Thực</h3>
+            <div class="flex">
+                <div class="control-panel">
+                    <h4>Đồng Hồ 1 (Bên Trái / Ủng Hộ)</h4>
+                    <button class="btn-success" onclick="control('timer1', 'start')">BẮT ĐẦU</button>
+                    <button onclick="control('timer1', 'pause')">TẠM DỪNG</button>
+                    <button class="btn-danger" onclick="control('timer1', 'reset')">RESET</button>
+                </div>
+
+                <div class="control-panel">
+                    <h4>Đồng Hồ 2 (Bên Phải / Phản Đối)</h4>
+                    <button class="btn-success" onclick="control('timer2', 'start')">BẮT ĐẦU</button>
+                    <button onclick="control('timer2', 'pause')">TẠM DỪNG</button>
+                    <button class="btn-danger" onclick="control('timer2', 'reset')">RESET</button>
+                </div>
+
+                <div class="control-panel" style="background: #eff6ff; border-color: #bfdbfe;">
+                    <h4>Điều Khiển Đồng Thời (Cả 2 Đội)</h4>
+                    <button class="btn-success" onclick="control('both', 'start')">BẮT ĐẦU CẢ HAI</button>
+                    <button onclick="control('both', 'pause')">TẠM DỪNG CẢ HAI</button>
+                    <button class="btn-danger" onclick="control('both', 'reset')">RESET CẢ HAI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tự động nhận diện host để kết nối (hỗ trợ chạy mạng LAN cực tốt)
+        const socket = io('http://' + window.location.host);
+        const statusBox = document.getElementById('connection-status');
+
+        socket.on('connect', () => {
+            statusBox.innerText = "TRẠNG THÁI HỆ THỐNG: KẾT NỐI THÀNH CÔNG VỚI SERVER";
+            statusBox.style.color = "#4ade80";
+        });
+
+        socket.on('disconnect', () => {
+            statusBox.innerText = "TRẠNG THÁI HỆ THỐNG: MẤT KẾT NỐI VỚI SERVER!";
+            statusBox.style.color = "#f87171";
+        });
+
+        function changeSlide(slideName) {
+            try {
+                socket.emit('adminAction', { type: 'changeSlide', payload: slideName });
+            } catch(e) { console.error("Lỗi đổi slide:", e); }
+        }
+
+        function setTimer() {
+            try {
+                const t1 = parseInt(document.getElementById('time1').value) || 0;
+                const t2 = parseInt(document.getElementById('time2').value) || 0;
+                socket.emit('adminAction', { type: 'setTimer', payload: { t1, t2 } });
+            } catch(e) { console.error("Lỗi đặt giờ:", e); }
+        }
+
+        function control(target, command) {
+            try {
+                socket.emit('adminAction', { type: 'controlTimer', payload: { target, command } });
+            } catch(e) { console.error("Lỗi lệnh điều khiển:", e); }
+        }
+    </script>
+</body>
+</html>

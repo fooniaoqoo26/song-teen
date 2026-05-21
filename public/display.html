@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sóng Teen - Màn Hình Hiển Thị</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body id="display-body" class="pos-main">
+
+    <div class="stage-container">
+        <div class="timer-wrapper" id="timer-ungho">
+            <svg class="circular-timer" viewBox="0 0 100 100">
+                <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="timer-progress" id="circle-ungho" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="timer-text" id="text-ungho">03:00</div>
+        </div>
+
+        <div class="timer-wrapper" id="timer-phandoi">
+            <svg class="circular-timer" viewBox="0 0 100 100">
+                <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="timer-progress" id="circle-phandoi" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="timer-text" id="text-phandoi">03:00</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/display.js"></script>
+</body>
+</html>

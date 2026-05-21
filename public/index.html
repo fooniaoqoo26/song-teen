@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sóng Teen - Cổng Truy Cập</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .gate-card { background: #1e293b; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; width: 350px; }
+        h2 { margin-bottom: 25px; color: #38bdf8; }
+        .btn-group { display: flex; gap: 15px; margin-bottom: 25px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; background: #334155; color: #cbd5e1; transition: 0.3s; }
+        button.active { background: #2563eb; color: white; box-shadow: 0 0 12px rgba(37,99,235,0.5); }
+        .form-group { margin-bottom: 15px; text-align: left; display: none; }
+        .form-group.show { display: block; }
+        label { display: block; font-size: 13px; color: #94a3b8; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; box-sizing: border-box; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; }
+        .btn-submit { width: 100%; background: #16a34a; color: white; margin-top: 15px; display: none; }
+        .btn-submit.show { display: block; }
+        .btn-submit:hover { background: #15803d; }
+        #error-msg { color: #f87171; font-size: 14px; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="gate-card">
+    <h2>TRANH BIỆN SÓNG TEEN</h2>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Vui lòng chọn vai trò truy cập của bạn</p>
+    
+    <div class="btn-group">
+        <button id="role-admin" onclick="selectRole('admin')">BÀN ĐIỀU HÀNH</button>
+        <button id="role-display" onclick="selectRole('display')">MÀN HIỂN THỊ</button>
+    </div>
+
+    <div id="auth-fields" class="form-group">
+        <label id="code-label">Mã truy cập phòng:</label>
+        <input type="text" id="room-code" placeholder="Ví dụ: ST2026"><br><br>
+        
+        <label>Mật khẩu phòng:</label>
+        <input type="password" id="room-pass" placeholder="Nhập mật khẩu">
+    </div>
+
+    <button id="submit-btn" class="btn-submit" onclick="handleSubmit()">XÁC NHẬN VÀO PHÒNG</button>
+    <div id="error-msg"></div>
+</div>
+
+<script>
+    const socket = io('http://' + window.location.host);
+    let chosenRole = '';
+
+    function selectRole(role) {
+        chosenRole = role;
+        // Đổi màu nút được chọn
+        document.getElementById('role-admin').className = role === 'admin' ? 'active' : '';
+        document.getElementById('role-display').className = role === 'display' ? 'active' : '';
+        
+        // Hiện form nhập liệu
+        document.getElementById('auth-fields').classList.add('show');
+        document.getElementById('submit-btn').classList.add('show');
+        document.getElementById('error-msg').innerText = '';
+
+        // Đổi chữ hướng dẫn tương ứng với vai trò
+        if (role === 'admin') {
+            document.getElementById('code-label').innerText = "Tạo mã phòng mới:";
+        } else {
+            document.getElementById('code-label').innerText = "Nhập mã phòng thi:";
+        }
+    }
+
+    function handleSubmit() {
+        const code = document.getElementById('room-code').value.trim();
+        const pass = document.getElementById('room-pass').value.trim();
+        const errorMsg = document.getElementById('error-msg');
+
+        if (!code || !pass) {
+            errorMsg.innerText = "Vui lòng nhập đầy đủ thông tin!";
+            return;
+        }
+
+        if (chosenRole === 'admin') {
+            // Lệnh tạo phòng dành cho Admin
+            socket.emit('createRoom', { code, pass }, (response) => {
+                if (response.success) {
+                    window.location.href = '/admin.html';
+                } else {
+                    errorMsg.innerText = response.message;
+                }
+            });
+        } else if (chosenRole === 'display') {
+            // Lệnh kiểm tra phòng dành cho Display
+            socket.emit('joinRoom', { code, pass }, (response) => {
+                if (response.success) {
+                    window.location.href = '/display.html';
+                } else {
+                    errorMsg.innerText = response.message;
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>
