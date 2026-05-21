@@ -45,8 +45,10 @@
 </div>
 
 <script>
-    const socket = io('http://' + window.location.host);
+    // Thay vì cố định http://, hãy để hệ thống tự lấy giao thức hiện tại (http hoặc https)
+    const socket = io(window.location.protocol + '//' + window.location.host);
     let chosenRole = '';
+
 
     function selectRole(role) {
         chosenRole = role;
