@@ -83,8 +83,7 @@
     </div>
 
     <script>
-        // Tự động nhận diện host để kết nối (hỗ trợ chạy mạng LAN cực tốt)
-        const socket = io('http://' + window.location.host);
+        const socket = io(window.location.protocol + '//' + window.location.host);
         const statusBox = document.getElementById('connection-status');
 
         socket.on('connect', () => {
