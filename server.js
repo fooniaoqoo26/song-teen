@@ -8,6 +8,10 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, 'public')));
+// BỔ SUNG NGAY ĐOẠN NÀY: Định nghĩa tuyến đường cho trang chủ
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Trạng thái ban đầu: Chưa cấu hình mã phòng và mật khẩu
 let roomState = {
